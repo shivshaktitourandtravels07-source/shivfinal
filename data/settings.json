@@ -1,0 +1,57 @@
+{
+  "homeHero": {
+    "coverImage": "/hero/slide1.jpg",
+    "heading": "Indore & Ujjain Darshan & Tour Packages",
+    "subheading": "Experience divine spiritual bliss across Madhya Pradesh’s revered Jyotirlingas: Shree Mahakaleshwar Bhasma Aarti (Ujjain) and Holy Omkareshwar (Narmada Island), together with Queen Ahilyabai’s sacred Maheshwar Ahilya Fort and Indore Heritage. Complete packages with sanitized cabs, deluxe hotels, and pure vegetarian dining.",
+    "slides": [
+      {
+        "id": "slide-1",
+        "title": "Shree Mahakaleshwar Jyotirlinga, Ujjain",
+        "subtitle": "Sacred Bhasma Aarti, Mahakal Lok Corridor & Shipra Ram Ghat",
+        "image": "/hero/slide1.jpg"
+      },
+      {
+        "id": "slide-2",
+        "title": "Holy Omkareshwar Jyotirlinga & Narmada River",
+        "subtitle": "Divine Island Pilgrimage, Mamleshwar Mahadev & Sacred Boat Ride",
+        "image": "/hero/slide2.jpg"
+      },
+      {
+        "id": "slide-3",
+        "title": "Royal Maheshwar Fort & Sacred Ahilya Ghat",
+        "subtitle": "Ahilya Fort, Ahileshwar Mandir, Sahastradhara & Rehwa Handlooms",
+        "image": "/hero/slide3.jpg"
+      },
+      {
+        "id": "slide-4",
+        "title": "Historic Rajwada Palace & Indore City Heritage",
+        "subtitle": "Rajwada Palace, Lal Bagh, 56 Dukan & Midnight Sarafa Street Food",
+        "image": "/hero/slide4.jpg"
+      },
+      {
+        "id": "slide-5",
+        "title": "Mandu Jahaz Mahal & Heritage Monuments",
+        "subtitle": "Jahaz Mahal, Hindola Mahal, Baz Bahadur & Rani Roopmati Pavilion",
+        "image": "/hero/slide5.jpg"
+      }
+    ]
+  },
+  "ujjainOffice": {
+    "title": "Ujjain Pilgrimage Branch (Nanakheda Hub)",
+    "address": "A-5/15 Mahakal Vanijya Kendra, Nanakheda, Ujjain, Madhya Pradesh 456010",
+    "contactPerson": "Branch Manager / Mahakal Darshan Desk",
+    "phone": "7999 353 101",
+    "timing": "24x7 Available for Mahakal Bhasma Aarti & Darshan",
+    "landmark": "Near Nanakheda Bus Stand, Ujjain",
+    "mapUrl": "https://maps.google.com/?q=Mahakal+Vanijya+Kendra+Nanakheda+Ujjain"
+  },
+  "indoreOffice": {
+    "title": "Indore Head Branch (Airport & Station Hub)",
+    "address": "220, Surya Appartment Usha Nagar, Near Ranjeet Hanuman Mandir Indore",
+    "contactPerson": "Operations Head / Fleet Incharge",
+    "phone": "7999 353 101",
+    "timing": "06:00 AM to 11:30 PM (All 7 Days Open)",
+    "landmark": "Near Ranjeet Hanuman Mandir, Usha Nagar, Indore",
+    "mapUrl": "https://maps.google.com/?q=Ranjeet+Hanuman+Mandir+Indore"
+  }
+}
