@@ -267,7 +267,16 @@ export const Footer: React.FC<FooterProps> = ({ navigate }) => {
             <span className="text-amber-400/90 font-serif">॥ जय श्री महाकाल ॥</span>
           </div>
 
-          <div className="flex items-center">
+          <div className="flex items-center gap-3">
+            <a
+              href="/sitemap.xml"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-400 hover:text-amber-300 border border-slate-800 hover:border-slate-700 text-[11px] transition-all font-medium"
+            >
+              <span>XML Sitemap</span>
+            </a>
+
             <a
               href="/admin"
               onClick={(e) => handleNav(e, '/admin')}

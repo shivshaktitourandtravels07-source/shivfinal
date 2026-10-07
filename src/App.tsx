@@ -98,7 +98,14 @@ export default function App() {
     // 2. Destination Landing Page: /destination/:slug
     if (currentPath.startsWith('/destination/')) {
       const destSlug = currentPath.replace('/destination/', '');
-      document.title = `${destSlug.toUpperCase()} Tour & Pilgrimage Guide | Shiv Shakti Tour & Travels`;
+      const destTitles: Record<string, string> = {
+        ujjain: 'Ujjain Mahakal Darshan Tour Packages & Guide | Bhasma Aarti Timings | Shiv Shakti Travels',
+        omkareshwar: 'Omkareshwar Jyotirlinga Tour & Darshan Guide | Narmada Boating | Shiv Shakti Travels',
+        indore: 'Indore Sightseeing & City Tour Packages | Rajwada, Lal Bagh, 56 Dukan | Shiv Shakti Travels',
+        maheshwar: 'Maheshwar Ahilya Fort Tour & Narmada Boating Guide | Tour Packages | Shiv Shakti Travels',
+        mandu: 'Mandu Tourism & Jahaz Mahal Sightseeing Tour Package | Shiv Shakti Travels'
+      };
+      document.title = destTitles[destSlug] || `${destSlug.toUpperCase()} Tour & Pilgrimage Guide | Shiv Shakti Tour & Travels`;
       return (
         <DestinationPage
           destinationSlug={destSlug}
@@ -112,7 +119,7 @@ export default function App() {
 
     // 3. All Packages List: /packages
     if (currentPath === '/packages') {
-      document.title = 'Pilgrimage & Tour Packages in Ujjain & Indore | Shiv Shakti Tour & Travels';
+      document.title = 'Ujjain Mahakal Tour Packages & Price List 2026 | Shiv Shakti Travels';
       return (
         <PackagesListPage
           packages={packages}
@@ -125,13 +132,13 @@ export default function App() {
 
     // 4. Contact Page: /contact
     if (currentPath === '/contact') {
-      document.title = 'Contact Shiv Shakti Tour & Travels | 7999 353 101 | Ujjain & Indore';
+      document.title = 'Contact Shiv Shakti Tour & Travels | Ujjain & Indore Office Phone 7999 353 101';
       return <ContactPage />;
     }
 
     // 5. About Us Page: /about
     if (currentPath === '/about') {
-      document.title = 'About Us | Shiv Shakti Tour & Travels - Top Indore & Ujjain Tour Operator';
+      document.title = 'Best Tour & Travel Agency in Ujjain & Indore | Shiv Shakti Tour & Travels';
       return <AboutPage navigate={navigate} />;
     }
 
@@ -148,7 +155,7 @@ export default function App() {
     }
 
     // Default: Home Page
-    document.title = 'Shiv Shakti Tour & Travels | Indore & Ujjain Darshan Tour Packages';
+    document.title = 'Ujjain Tour Packages | Indore to Ujjain Mahakal Darshan Cab | Shiv Shakti Travels';
     return (
       <HomePage
         packages={packages}
