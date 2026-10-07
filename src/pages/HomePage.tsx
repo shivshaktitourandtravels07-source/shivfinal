@@ -1,10 +1,35 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Star, Phone, MessageCircle, Clock, MapPin, CheckCircle2, ChevronRight, Car, Hotel, UtensilsCrossed, ArrowRight, ShieldCheck, ChevronLeft, Flame, Award, HeartHandshake } from 'lucide-react';
+import { Sparkles, Star, Phone, MessageCircle, Clock, MapPin, CheckCircle2, ChevronRight, Car, Hotel, UtensilsCrossed, ArrowRight, ShieldCheck, ChevronLeft, Flame, Award, HeartHandshake, ChevronDown } from 'lucide-react';
 import { TourPackage, HeroSlide } from '../types';
-import { AGENCY_INFO, HERO_SLIDES } from '../data/packagesData';
+import { AGENCY_INFO, HERO_SLIDES, INITIAL_PACKAGES } from '../data/packagesData';
 import { getAgencySettings } from '../services/packageStorage';
 import { PackageCard } from '../components/PackageCard';
 import { BranchAddressesSection } from '../components/BranchAddressesSection';
+
+const getPackageDropdownLabel = (pkg: TourPackage) => {
+  if (pkg.slug.includes('1-day')) {
+    return `1 Day: Ujjain Mahakal & Temples (₹${pkg.pricePerPerson.toLocaleString('en-IN')})`;
+  }
+  if (pkg.slug.includes('2-days-1-night')) {
+    return `2D/1N: Ujjain & Omkareshwar (₹${pkg.pricePerPerson.toLocaleString('en-IN')})`;
+  }
+  if (pkg.slug.includes('maheshwar-tour')) {
+    return `3D/2N: Ujjain, Omkareshwar & Maheshwar (₹${pkg.pricePerPerson.toLocaleString('en-IN')})`;
+  }
+  if (pkg.slug.includes('indore-city-tour')) {
+    return `3D/2N: Ujjain, Omkareshwar & Indore City (₹${pkg.pricePerPerson.toLocaleString('en-IN')})`;
+  }
+  if (pkg.slug.includes('4-days')) {
+    return `4D/3N: MP Golden Circuit (4 Cities) (₹${pkg.pricePerPerson.toLocaleString('en-IN')})`;
+  }
+  if (pkg.slug.includes('5-days')) {
+    return `5D/4N: Grand Malwa & Mandu Circuit (₹${pkg.pricePerPerson.toLocaleString('en-IN')})`;
+  }
+  if (pkg.slug.includes('6-days')) {
+    return `6D/5N: Grand MP Pilgrimage Odyssey (₹${pkg.pricePerPerson.toLocaleString('en-IN')})`;
+  }
+  return `${pkg.duration}: ${pkg.title.slice(0, 28)}... (₹${pkg.pricePerPerson.toLocaleString('en-IN')})`;
+};
 
 interface HomePageProps {
   packages: TourPackage[];
@@ -82,15 +107,17 @@ export const HomePage: React.FC<HomePageProps> = ({
   };
 
   // Top featured packages only on HomePage (rest on /packages)
-  const featuredPackages = packages.slice(0, 3);
+  const allPackages = packages && packages.length > 0 ? packages : INITIAL_PACKAGES;
+  const featuredPackages = allPackages.slice(0, 3);
+  const selectedPackage = allPackages.find(p => p.slug === quickPackageSlug) || allPackages[0];
 
   const handleQuickWhatsAppSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const pkg = packages.find(p => p.slug === quickPackageSlug) || packages[0];
+    const pkg = allPackages.find(p => p.slug === quickPackageSlug) || allPackages[0];
     const text = `Namaste Shiv Shakti Tour & Travels!
 I want to book/inquire about:
 *Package:* ${pkg.title} (${pkg.duration})
-*Price:* ₹${pkg.pricePerPerson}/person
+*Price:* ₹${pkg.pricePerPerson.toLocaleString('en-IN')}/person
 *Travel Date:* ${quickDate || 'Flexible'}
 *Persons:* ${quickPersons}
 *Mobile:* ${quickMobile || 'Inquired on Website'}
@@ -103,7 +130,7 @@ Please share complete itinerary & confirm availability.`;
       body: JSON.stringify({
         packageName: pkg.title,
         travelDate: quickDate,
-        numberOfPersons: Number(quickPersons),
+        numberOfPersons: Number(quickPersons) || 2,
         phone: quickMobile || 'Direct WhatsApp Inquiry'
       })
     }).catch(() => {});
@@ -247,69 +274,85 @@ Please share complete itinerary & confirm availability.`;
             </div>
 
             {/* Right Column: Quick WhatsApp Reservation Card */}
-            <div className="lg:col-span-5">
-              <div className="bg-white text-slate-900 rounded-3xl p-6 sm:p-7 shadow-2xl border border-amber-200/80">
-                <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 mb-4">
-                  <div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-amber-800">Quick Pilgrimage Booking</span>
-                    <h3 className="text-lg font-bold text-slate-900">Check Dates on WhatsApp</h3>
+            <div className="lg:col-span-5 w-full max-w-full">
+              <div className="bg-white text-slate-900 rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-2xl border border-amber-200/80 w-full max-w-full overflow-hidden">
+                <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 mb-4 gap-2">
+                  <div className="min-w-0">
+                    <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-amber-800 block truncate">Quick Pilgrimage Booking</span>
+                    <h3 className="text-base sm:text-lg font-bold text-slate-900 truncate">Check Dates on WhatsApp</h3>
                   </div>
-                  <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 flex items-center gap-1">
-                    <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                    Instant Response
+                  <span className="shrink-0 text-[10px] sm:text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
+                    <span>Instant Response</span>
                   </span>
                 </div>
 
                 <form onSubmit={handleQuickWhatsAppSubmit} className="space-y-3.5">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">Select Tour Package</label>
-                    <select
-                      value={quickPackageSlug}
-                      onChange={(e) => setQuickPackageSlug(e.target.value)}
-                      className="w-full p-2.5 text-xs border border-slate-300 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-700 font-medium text-slate-900"
-                    >
-                      <option value="2-days-1-night-ujjain-omkareshwar-darshan">
-                        2 Days / 1 Night Ujjain & Omkareshwar (₹6,499)
-                      </option>
-                      <option value="3-days-2-nights-ujjain-omkareshwar-maheshwar-tour">
-                        3 Days / 2 Nights Ujjain, Omkareshwar & Maheshwar (₹8,499)
-                      </option>
-                      <option value="1-day-ujjain-mahakal-darshan-day-tour">
-                        1 Day Ujjain Mahakal Excursion (₹2,499)
-                      </option>
-                    </select>
+                  <div className="w-full">
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Select Tour Package (6 Curated Itineraries)</label>
+                    <div className="relative w-full">
+                      <select
+                        value={quickPackageSlug}
+                        onChange={(e) => setQuickPackageSlug(e.target.value)}
+                        className="w-full appearance-none pl-3 pr-8 py-2.5 text-xs sm:text-sm font-semibold border border-slate-300 rounded-xl bg-slate-50 hover:bg-white focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-700 text-slate-900 transition-colors cursor-pointer truncate shadow-xs"
+                      >
+                        {allPackages.map((pkg) => (
+                          <option key={pkg.id || pkg.slug} value={pkg.slug} className="py-1 text-slate-900 font-medium">
+                            {getPackageDropdownLabel(pkg)}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="w-4 h-4 text-slate-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    </div>
+
+                    {/* Selected Package Instant Summary Pill */}
+                    {selectedPackage && (
+                      <div className="mt-2 p-2.5 bg-amber-50/90 border border-amber-200/90 rounded-xl flex items-center justify-between gap-2 text-xs">
+                        <div className="min-w-0 flex-1">
+                          <span className="font-bold text-amber-950 block truncate text-xs">{selectedPackage.title}</span>
+                          <span className="text-amber-800 text-[11px] block">{selectedPackage.duration}</span>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <span className="text-xs sm:text-sm font-black text-amber-900">₹{selectedPackage.pricePerPerson.toLocaleString('en-IN')}</span>
+                          <span className="text-[10px] text-slate-500 block leading-tight">/ person</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2.5">
-                    <div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <div className="w-full min-w-0">
                       <label className="block text-xs font-semibold text-slate-700 mb-1">Travel Date</label>
                       <input
                         type="date"
                         required
                         value={quickDate}
                         onChange={(e) => setQuickDate(e.target.value)}
-                        className="w-full p-2.5 text-xs border border-slate-300 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-700 text-slate-900"
+                        className="w-full p-2.5 text-xs sm:text-sm border border-slate-300 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-700 text-slate-900 font-medium"
                       />
                     </div>
-                    <div>
+                    <div className="w-full min-w-0">
                       <label className="block text-xs font-semibold text-slate-700 mb-1">No. of Persons</label>
-                      <select
-                        value={quickPersons}
-                        onChange={(e) => setQuickPersons(e.target.value)}
-                        className="w-full p-2.5 text-xs border border-slate-300 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-700 font-medium text-slate-900"
-                      >
-                        <option value="1">1 Person</option>
-                        <option value="2">2 Persons</option>
-                        <option value="3">3 Persons</option>
-                        <option value="4">4 Persons</option>
-                        <option value="5">5 Persons</option>
-                        <option value="6">6 Persons (Family)</option>
-                        <option value="7+">7+ Persons (Large Group)</option>
-                      </select>
+                      <div className="relative w-full">
+                        <select
+                          value={quickPersons}
+                          onChange={(e) => setQuickPersons(e.target.value)}
+                          className="w-full appearance-none pl-3 pr-8 py-2.5 text-xs sm:text-sm border border-slate-300 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-700 font-medium text-slate-900 cursor-pointer"
+                        >
+                          <option value="1">1 Person</option>
+                          <option value="2">2 Persons</option>
+                          <option value="3">3 Persons</option>
+                          <option value="4">4 Persons</option>
+                          <option value="5">5 Persons</option>
+                          <option value="6">6 Persons (Family)</option>
+                          <option value="7+">7+ Persons (Group)</option>
+                        </select>
+                        <ChevronDown className="w-4 h-4 text-slate-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      </div>
                     </div>
                   </div>
 
-                  <div>
+                  <div className="w-full min-w-0">
                     <label className="block text-xs font-semibold text-slate-700 mb-1">Your Mobile / WhatsApp Number</label>
                     <input
                       type="tel"
@@ -317,7 +360,7 @@ Please share complete itinerary & confirm availability.`;
                       value={quickMobile}
                       onChange={(e) => setQuickMobile(e.target.value)}
                       placeholder="e.g. 9876543210"
-                      className="w-full p-2.5 text-xs border border-slate-300 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-700 font-mono text-slate-900"
+                      className="w-full p-2.5 text-xs sm:text-sm border border-slate-300 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-700 font-mono text-slate-900"
                     />
                   </div>
 
@@ -325,7 +368,7 @@ Please share complete itinerary & confirm availability.`;
                     type="submit"
                     className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition-all text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <MessageCircle className="w-4 h-4 fill-current" />
+                    <MessageCircle className="w-4 h-4 fill-current shrink-0" />
                     <span>Send Inquiry on WhatsApp</span>
                   </button>
 
