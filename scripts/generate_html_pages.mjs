@@ -16,8 +16,8 @@ function renderPackageHtml(pkg) {
   const pageKeywords = (pkg.seoKeywords && pkg.seoKeywords.length > 0)
     ? pkg.seoKeywords.join(', ')
     : 'Ujjain tour packages, Mahakal darshan package, Omkareshwar Jyotirlinga tour, Indore sightseeing cab';
-  const coverImg = pkg.coverImage.startsWith('http') ? pkg.coverImage : `https://ais-dev-ivqfaahhxazzq5rz3e4jvt-731359493945.asia-southeast1.run.app${pkg.coverImage}`;
-  const canonicalUrl = `https://ais-dev-ivqfaahhxazzq5rz3e4jvt-731359493945.asia-southeast1.run.app/package/${pkg.slug}`;
+  const coverImg = pkg.coverImage.startsWith('http') ? pkg.coverImage : `https://www.shivshaktitours.co.in${pkg.coverImage}`;
+  const canonicalUrl = `https://www.shivshaktitours.co.in/package/${pkg.slug}`;
 
   const schemaJsonLd = {
     "@context": "https://schema.org",
@@ -40,7 +40,7 @@ function renderPackageHtml(pkg) {
           "@type": "TravelAgency",
           "name": AGENCY_INFO.name,
           "telephone": "+91-7999353101",
-          "url": "https://ais-dev-ivqfaahhxazzq5rz3e4jvt-731359493945.asia-southeast1.run.app",
+          "url": "https://www.shivshaktitours.co.in",
           "address": [
             {
               "@type": "PostalAddress",
@@ -655,7 +655,7 @@ for (const pkg of INITIAL_PACKAGES) {
 
 // Generate XML Sitemap
 function generateSitemap() {
-  const baseUrl = 'https://shivshaktitourtravels.com';
+  const baseUrl = 'https://www.shivshaktitours.co.in';
   const today = new Date().toISOString().split('T')[0];
 
   let xml = `<?xml version="1.0" encoding="UTF-8"?>

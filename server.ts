@@ -137,7 +137,7 @@ function writeSettings(data: any) {
 
 // Dynamic Sitemap XML Endpoint
 app.get('/sitemap.xml', (req, res) => {
-  const host = req.get('host') || 'shivshaktitourtravels.com';
+  const host = req.get('host') || 'www.shivshaktitours.co.in';
   const protocol = req.protocol === 'http' && !host.includes('localhost') ? 'https' : req.protocol;
   const baseUrl = `${protocol}://${host}`;
   const packages = readPackages();
@@ -240,7 +240,7 @@ ${imagesXml}
 
 // Robots.txt dynamic endpoint
 app.get('/robots.txt', (req, res) => {
-  const host = req.get('host') || 'shivshaktitourtravels.com';
+  const host = req.get('host') || 'www.shivshaktitours.co.in';
   const protocol = req.protocol === 'http' && !host.includes('localhost') ? 'https' : req.protocol;
   const baseUrl = `${protocol}://${host}`;
 
