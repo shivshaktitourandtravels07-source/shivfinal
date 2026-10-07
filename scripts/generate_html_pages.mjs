@@ -653,4 +653,91 @@ for (const pkg of INITIAL_PACKAGES) {
   fs.writeFileSync(idPath, html, 'utf-8');
 }
 
-console.log('All 6 package static HTML pages generated successfully!');
+// Generate XML Sitemap
+function generateSitemap() {
+  const baseUrl = 'https://shivshaktitourtravels.com';
+  const today = new Date().toISOString().split('T')[0];
+
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <!-- Core Main Pages -->
+  <url>
+    <loc>${baseUrl}/</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>${baseUrl}/hero/slide1.jpg</image:loc>
+      <image:title>Shree Mahakaleshwar Jyotirlinga Ujjain Tour</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>${baseUrl}/packages</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>${baseUrl}/about</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>${baseUrl}/contact</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+`;
+
+  for (const pkg of INITIAL_PACKAGES) {
+    xml += `
+  <url>
+    <loc>${baseUrl}/package/${pkg.slug}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+    <image:image>
+      <image:loc>${baseUrl}${pkg.coverImage}</image:loc>
+      <image:title>${pkg.title.replace(/&/g, '&amp;')}</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>${baseUrl}/${pkg.slug}.html</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+  </url>
+`;
+  }
+
+  const dests = ['ujjain', 'indore', 'omkareshwar', 'maheshwar', 'mandu'];
+  for (const dest of dests) {
+    xml += `
+  <url>
+    <loc>${baseUrl}/destination/${dest}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+`;
+  }
+
+  xml += `\n</urlset>`;
+
+  fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap.xml'), xml, 'utf-8');
+  fs.writeFileSync(path.resolve('sitemap.xml'), xml, 'utf-8');
+  console.log('Generated: sitemap.xml in public/ and root');
+}
+
+generateSitemap();
+
+console.log('All 6 package static HTML pages & sitemap generated successfully!');

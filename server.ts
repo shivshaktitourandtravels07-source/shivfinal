@@ -135,6 +135,127 @@ function writeSettings(data: any) {
 
 // ---------------- API ENDPOINTS ----------------
 
+// Dynamic Sitemap XML Endpoint
+app.get('/sitemap.xml', (req, res) => {
+  const host = req.get('host') || 'shivshaktitourtravels.com';
+  const protocol = req.protocol === 'http' && !host.includes('localhost') ? 'https' : req.protocol;
+  const baseUrl = `${protocol}://${host}`;
+  const packages = readPackages();
+  const today = new Date().toISOString().split('T')[0];
+
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <!-- Core Main Pages -->
+  <url>
+    <loc>${baseUrl}/</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>${baseUrl}/hero/slide1.jpg</image:loc>
+      <image:title>Shree Mahakaleshwar Jyotirlinga Ujjain Tour</image:title>
+      <image:caption>Shiv Shakti Tour and Travels - Premier Indore and Ujjain Tour Operator</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>${baseUrl}/hero/slide2.jpg</image:loc>
+      <image:title>Holy Omkareshwar Jyotirlinga and Narmada River</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>${baseUrl}/packages</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>${baseUrl}/packages/ujjain_mahakal_mandir.jpg</image:loc>
+      <image:title>All Madhya Pradesh and Ujjain Tour Packages</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>${baseUrl}/about</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>${baseUrl}/contact</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+`;
+
+  // Dynamic Tour Packages
+  for (const pkg of packages) {
+    const imagesXml = (pkg.galleryImages || [pkg.coverImage]).filter(Boolean).slice(0, 3).map((img: string) => {
+      const fullImgUrl = img.startsWith('http') ? img : `${baseUrl}${img}`;
+      const safeTitle = (pkg.title || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      return `    <image:image>
+      <image:loc>${fullImgUrl}</image:loc>
+      <image:title>${safeTitle}</image:title>
+    </image:image>`;
+    }).join('\n');
+
+    xml += `
+  <url>
+    <loc>${baseUrl}/package/${pkg.slug}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+${imagesXml}
+  </url>
+
+  <url>
+    <loc>${baseUrl}/${pkg.slug}.html</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+  </url>
+`;
+  }
+
+  // Destination Guides
+  for (const dest of DESTINATIONS_DATA) {
+    xml += `
+  <url>
+    <loc>${baseUrl}/destination/${dest.slug}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+`;
+  }
+
+  xml += `\n</urlset>`;
+
+  res.header('Content-Type', 'application/xml; charset=utf-8');
+  res.send(xml);
+});
+
+// Robots.txt dynamic endpoint
+app.get('/robots.txt', (req, res) => {
+  const host = req.get('host') || 'shivshaktitourtravels.com';
+  const protocol = req.protocol === 'http' && !host.includes('localhost') ? 'https' : req.protocol;
+  const baseUrl = `${protocol}://${host}`;
+
+  const robots = `# Robots.txt for Shiv Shakti Tour & Travels
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
+
+Sitemap: ${baseUrl}/sitemap.xml
+`;
+  res.header('Content-Type', 'text/plain; charset=utf-8');
+  res.send(robots);
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', time: new Date().toISOString() });
@@ -437,9 +558,9 @@ function getPageSeoMeta(urlPath: string) {
 
   if (urlPath.startsWith('/destination/ujjain')) {
     return {
-      title: 'Ujjain Tour Packages & Mahakaleshwar Darshan Guide | Shiv Shakti Tour & Travels',
-      description: 'Book comprehensive Ujjain tour packages. Shree Mahakaleshwar Jyotirlinga VIP darshan, Bhasma Aarti guidance, Kaal Bhairav, Ram Ghat Shipra Aarti & AC cabs.',
-      keywords: 'Ujjain tour package, Mahakal darshan package, Ujjain pilgrimage tour, Ujjain travel agency 7999353101',
+      title: 'Ujjain Mahakal Darshan Tour Packages & Guide | Bhasma Aarti Timings | Shiv Shakti Travels',
+      description: 'Book comprehensive Ujjain tour packages from Indore. Shree Mahakaleshwar Jyotirlinga VIP darshan, Bhasma Aarti guidance, Kaal Bhairav, Harsiddhi Mata, Ram Ghat Shipra Aarti & AC cabs.',
+      keywords: 'Ujjain tour package, Mahakal darshan package, Ujjain pilgrimage tour, Indore to Ujjain cab, Bhasma aarti booking guidance, Ujjain travel agency 7999353101',
       ogTitle: 'Ujjain Tour & Mahakaleshwar Darshan Packages',
       ogDescription: 'Experience divine Ujjain with VIP darshan, luxury AC cabs and super deluxe hotel stays.'
     };
@@ -447,9 +568,9 @@ function getPageSeoMeta(urlPath: string) {
 
   if (urlPath.startsWith('/destination/indore')) {
     return {
-      title: 'Indore Sightseeing & Food Tour Packages | Rajwada, 56 Dukan, Lal Bagh',
-      description: 'Explore the best of Indore heritage with Shiv Shakti Tour & Travels. Rajwada Palace, Lal Bagh, Sarafa Night Market, 56 Dukan & Kanch Mandir.',
-      keywords: 'Indore tour packages, Indore sightseeing cab, Indore travel agency, Rajwada tour, 56 dukan tour',
+      title: 'Indore Sightseeing & City Tour Packages | Rajwada, Lal Bagh, 56 Dukan | Shiv Shakti Travels',
+      description: 'Explore the best of Indore heritage with Shiv Shakti Tour & Travels. Rajwada Palace, Lal Bagh Palace, Sarafa Night Food Market, 56 Dukan & Kanch Mandir with dedicated cab.',
+      keywords: 'Indore tour packages, Indore sightseeing cab, Indore travel agency, Rajwada tour, 56 dukan tour, Indore to Ujjain taxi',
       ogTitle: 'Indore Heritage & City Tour Packages',
       ogDescription: 'Explore royal Holkar palaces and world-famous culinary streets with dedicated comfortable cab service.'
     };
@@ -457,27 +578,47 @@ function getPageSeoMeta(urlPath: string) {
 
   if (urlPath.startsWith('/destination/omkareshwar')) {
     return {
-      title: 'Omkareshwar Jyotirlinga & Mamleshwar Tour Package | Shiv Shakti Tour & Travels',
-      description: 'Book Omkareshwar Jyotirlinga tour package from Indore and Ujjain. Includes sacred Narmada boat ride, Mamleshwar darshan & comfortable transport.',
-      keywords: 'Omkareshwar tour package, Omkareshwar jyotirlinga from Indore, Mamleshwar mahadev tour, Omkareshwar taxi',
+      title: 'Omkareshwar Jyotirlinga Tour & Darshan Guide | Narmada Boating | Shiv Shakti Travels',
+      description: 'Book Omkareshwar Jyotirlinga tour package from Indore and Ujjain. Includes sacred Narmada boat ride, Mamleshwar darshan, island parikrama & comfortable sanitized cab.',
+      keywords: 'Omkareshwar tour package, Omkareshwar jyotirlinga from Indore, Mamleshwar mahadev tour, Omkareshwar taxi, Narmada boating package',
       ogTitle: 'Omkareshwar Jyotirlinga Tour Packages',
       ogDescription: 'Sacred island pilgrimage with Narmada boat ride, Mamleshwar Mahadev and dedicated comfortable transfers.'
     };
   }
 
+  if (urlPath.startsWith('/destination/maheshwar')) {
+    return {
+      title: 'Maheshwar Ahilya Fort Tour & Narmada Boating Guide | Tour Packages | Shiv Shakti Travels',
+      description: 'Explore Queen Ahilyabai Holkar Maheshwar Fort, Ahilya Ghat, Ahileshwar Temple, Sahastradhara waterfall, and Rehwa Handlooms with our dedicated tour packages.',
+      keywords: 'Maheshwar tour package, Ahilya fort Maheshwar tour, Maheshwar saree shopping, Sahastradhara waterfall cab, Jam Gate Maheshwar tour',
+      ogTitle: 'Maheshwar Ahilya Fort & Heritage Tour Packages',
+      ogDescription: 'Royal Maratha fort on sacred Narmada banks with boat rides, temple darshan and handloom weaving.'
+    };
+  }
+
+  if (urlPath.startsWith('/destination/mandu')) {
+    return {
+      title: 'Mandu Tourism & Jahaz Mahal Sightseeing Tour Package | Shiv Shakti Travels',
+      description: 'Book Indore to Mandu sightseeing tour package. Explore Jahaz Mahal (Ship Palace), Rani Roopmati Pavilion, Hindola Mahal, and Hoshang Shah Tomb with sanitized cab.',
+      keywords: 'Mandu tour package, Indore to Mandu cab, Jahaz Mahal Mandu sightseeing, Roopmati pavilion tour, Mandu tourism Madhya Pradesh',
+      ogTitle: 'Mandu Hilltop Citadel & Heritage Tour Packages',
+      ogDescription: 'Explore the romantic medieval city of Mandu with floating Jahaz Mahal and clifftop Rani Roopmati Pavilion.'
+    };
+  }
+
   if (urlPath === '/packages') {
     return {
-      title: 'All Tour Packages in Ujjain & Indore | 2D/1N & 3D/2N Rates | Shiv Shakti Tour & Travels',
-      description: 'Compare all pilgrimage and heritage tour packages in Ujjain, Omkareshwar, and Indore starting at ₹6,499. Transparent pricing, luxury cabs & VIP darshan.',
-      keywords: 'Ujjain packages, Indore packages, Mahakal 2 days package, MP tourism packages',
+      title: 'Ujjain Mahakal Tour Packages & Price List 2026 | Shiv Shakti Travels',
+      description: 'Compare all 1-day to 6-day pilgrimage and heritage tour packages in Ujjain, Omkareshwar, Maheshwar, and Indore starting at ₹3,499. Transparent pricing, luxury cabs & VIP darshan.',
+      keywords: 'Ujjain packages, Indore packages, Mahakal 2 days package, MP tourism packages, Ujjain tour package price list, Jyotirlinga tour packages',
       ogTitle: 'Pilgrimage & Heritage Tour Packages - Ujjain & Indore',
-      ogDescription: 'Compare verified 2D/1N, 3D/2N & 1-day tours for Mahakal, Omkareshwar and Indore.'
+      ogDescription: 'Compare verified 1-Day, 2D/1N, 3D/2N & 4D/3N tours for Mahakal, Omkareshwar and Indore.'
     };
   }
 
   if (urlPath === '/about') {
     return {
-      title: 'About Us | Shiv Shakti Tour & Travels - Indore & Ujjain Pilgrimage Specialist',
+      title: 'Best Tour & Travel Agency in Ujjain & Indore | Shiv Shakti Tour & Travels',
       description: 'Learn about Shiv Shakti Tour & Travels. 12+ years of providing trusted pilgrimage packages for Shree Mahakaleshwar Jyotirlinga, Omkareshwar, and Indore heritage tours. 25,000+ satisfied pilgrims.',
       keywords: 'about Shiv Shakti Tour Travels, top travel agency Ujjain, best tour operator Indore, trusted Mahakal tour company, Mahakal darshan tour agency',
       ogTitle: 'About Us | Shiv Shakti Tour & Travels - Ujjain & Indore',
@@ -499,9 +640,9 @@ function getPageSeoMeta(urlPath: string) {
 
   if (urlPath === '/contact') {
     return {
-      title: 'Contact Shiv Shakti Tour & Travels | Call 7999 353 101 | Ujjain & Indore Offices',
-      description: 'Contact Shiv Shakti Tour & Travels for tour bookings and customized itineraries. Offices at Nanakheda Ujjain and Usha Nagar Near Ranjeet Hanuman Mandir Indore.',
-      keywords: 'contact Shiv Shakti Tour Travels, travel agent phone Ujjain, travel agency number 7999353101',
+      title: 'Contact Shiv Shakti Tour & Travels | Ujjain & Indore Office Phone 7999 353 101',
+      description: 'Contact Shiv Shakti Tour & Travels for instant tour bookings and customized itineraries. Offices at Nanakheda Ujjain and Usha Nagar Near Ranjeet Hanuman Mandir Indore.',
+      keywords: 'contact Shiv Shakti Tour Travels, travel agent phone Ujjain, travel agency number 7999353101, Ujjain tour booking contact',
       ogTitle: 'Contact Shiv Shakti Tour & Travels',
       ogDescription: 'Call 7999 353 101 or message on WhatsApp for customized tour plans.'
     };
@@ -509,9 +650,9 @@ function getPageSeoMeta(urlPath: string) {
 
   // Default Home Page SEO
   return {
-    title: 'Shiv Shakti Tour & Travels | Indore & Ujjain Darshan Tour Packages',
-    description: 'Premier travel agency for Ujjain Mahakaleshwar VIP Darshan, Omkareshwar Jyotirlinga, and Indore heritage sightseeing. 2D/1N & 3D/2N all-inclusive packages.',
-    keywords: 'Ujjain tour packages, Mahakal darshan package, Omkareshwar Jyotirlinga tour, Indore sightseeing cab, Shiv Shakti Tour and Travels',
+    title: 'Ujjain Tour Packages | Indore to Ujjain Mahakal Darshan Cab | Shiv Shakti Travels',
+    description: 'Book best Ujjain tour packages & Indore to Ujjain Mahakal Darshan cab services with VIP darshan guidance, Omkareshwar Jyotirlinga, AC cabs & hotel stays. Call 7999 353 101.',
+    keywords: 'Ujjain tour packages, Indore Ujjain tour package, Mahakal darshan package, Omkareshwar Jyotirlinga tour, Indore to Ujjain cab, Shiv Shakti Tour and Travels',
     ogTitle: 'Shiv Shakti Tour & Travels | Indore & Ujjain Pilgrimage Packages',
     ogDescription: 'All-inclusive divine tours with VIP darshan assistance, super deluxe hotels, pure veg meals, and dedicated AC cabs.'
   };

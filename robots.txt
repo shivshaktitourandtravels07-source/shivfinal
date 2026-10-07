@@ -1,0 +1,10 @@
+# Robots.txt for Shiv Shakti Tour & Travels
+# https://shivshaktitourtravels.com
+
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://shivshaktitourtravels.com/sitemap.xml
